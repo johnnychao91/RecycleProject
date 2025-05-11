@@ -1,13 +1,13 @@
 # Test Accuracy 比較
 # 
 # | 模型              | Test Accuracy                      |
-# |-------------------|------------------------------------|
+# | -------------------------------------------------------|
 # | MobileNetV2       | 0.8361344537815126                 |
 # | EfficientNetB0    | 0.8403361344537815                 |
 # | EfficientNetB1    | 0.8403361344537815                 |
-# | EfficientNetV2S   | *(尚未測試)*                        |
+# | EfficientNetV2S   | 0.7815126050420168                 |
 # | EfficientNetV2M   | 0.7415966386554622                 |
-# | ConvNeXtTiny      | *(尚未測試)*                        |
+# | ConvNeXtTiny      | 0.8382352941176471                 |
 
 
 import os
@@ -116,13 +116,13 @@ model = model.to(device)
 model_dir = f"./models/EfficientNetB1"
 """
 
-
+"""ㄋ
 model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = f"./models/EfficientNetV2S"
-
+"""
 
 """
 model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
@@ -132,13 +132,13 @@ model = model.to(device)
 model_dir = f"./models/EfficientNetV2M"
 """
 
-"""
+
 model = models.convnext_tiny(weights=models.ConvNeXt_Tiny_Weights.DEFAULT)
 in_features = model.classifier[2].in_features
 model.classifier[2] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = f"./models/ConvNeXtTiny"
-"""
+
 
 for param in model.features.parameters():
     param.requires_grad = False
