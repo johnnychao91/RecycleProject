@@ -1,13 +1,20 @@
 # Test Accuracy 比較
 # 
 # | 模型              | Test Accuracy                      |
-# | -------------------------------------------------------|
+# | 全凍結--------------------------------------------------| 
 # | MobileNetV2       | 0.8361344537815126                 |
 # | EfficientNetB0    | 0.8403361344537815                 |
 # | EfficientNetB1    | 0.8403361344537815                 |
 # | EfficientNetV2S   | 0.7815126050420168                 |
 # | EfficientNetV2M   | 0.7415966386554622                 |
 # | ConvNeXtTiny      | 0.8382352941176471                 |
+# | 全訓練--------------------------------------------------|
+# | MobileNetV2       | *(尚未測試)*                  |
+# | EfficientNetB0    | *(尚未測試)*                  |
+# | EfficientNetB1    | *(尚未測試)*                  |
+# | EfficientNetV2S   | *(尚未測試)*                  |
+# | EfficientNetV2M   | *(尚未測試)*                  |
+# | ConvNeXtTiny      | *(尚未測試)*                  |
 
 
 import os
@@ -139,9 +146,10 @@ model.classifier[2] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = f"./models/ConvNeXtTiny"
 
-
+"""
 for param in model.features.parameters():
     param.requires_grad = False
+"""
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
