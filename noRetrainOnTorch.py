@@ -9,12 +9,12 @@
 # | EfficientNetV2M   | 0.7415966386554622                 |
 # | ConvNeXtTiny      | 0.8382352941176471                 |
 # | 全訓練--------------------------------------------------|
-# | MobileNetV2       | *(尚未測試)*                  |
-# | EfficientNetB0    | *(尚未測試)*                  |
-# | EfficientNetB1    | *(尚未測試)*                  |
-# | EfficientNetV2S   | *(尚未測試)*                  |
-# | EfficientNetV2M   | *(尚未測試)*                  |
-# | ConvNeXtTiny      | *(尚未測試)*                  |
+# | MobileNetV2       | 0.8466386554621849                 |
+# | EfficientNetB0    | 0.8634453781512605                 |
+# | EfficientNetB1    | 0.8718487394957983                 |
+# | EfficientNetV2S   | 0.8298319327731093                 |
+# | EfficientNetV2M   | 0.8172268907563025                 |
+# | ConvNeXtTiny      | 0.7815126050420168                 |
 
 
 import os
@@ -36,6 +36,8 @@ from skimage.io import imread
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tqdm import tqdm
+import random
+from torch.backends import cudnn
 
 # 檢查 GPU
 if torch.backends.mps.is_available():
@@ -45,6 +47,26 @@ elif torch.cuda.is_available():
 else:
     device = torch.device("cpu")
 print("Using device:", device)
+
+# 固定隨機種子
+SEED = 1
+np.random.seed(SEED)
+random.seed(SEED)
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
+torch.cuda.manual_seed_all(SEED)
+cudnn.deterministic = True
+cudnn.benchmark = False
+
+# 如果要 DataLoader worker 也固定種子
+def seed_worker(worker_id):
+    worker_seed = SEED + worker_id
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+
+# 建議在你的 DataLoader 中這樣使用：
+g = torch.Generator()
+g.manual_seed(SEED)
 
 INPUT_PATH = "./data/realwaste-main/RealWaste"
 print(os.listdir(INPUT_PATH))
@@ -95,17 +117,17 @@ train_dataset = WasteDataset(train_df, transform=transform)
 val_dataset = WasteDataset(val_df, transform=transform)
 test_dataset = WasteDataset(test_df, transform=transform)
 
-x_train = DataLoader(train_dataset, batch_size=16, shuffle=True)
-x_val = DataLoader(val_dataset, batch_size=16, shuffle=False)
-x_test = DataLoader(test_dataset, batch_size=16, shuffle=False)
+x_train = DataLoader(train_dataset, batch_size=16, shuffle=True, worker_init_fn=seed_worker, generator=g)
+x_val = DataLoader(val_dataset, batch_size=16, shuffle=False, worker_init_fn=seed_worker, generator=g)
+x_test = DataLoader(test_dataset, batch_size=16, shuffle=False, worker_init_fn=seed_worker, generator=g)
 
-"""
+
 model = models.mobilenet_v2(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = f"./models/MobileNetV2"
-"""
+
 
 """
 model = models.efficientnet_b0(pretrained=True)
@@ -123,7 +145,7 @@ model = model.to(device)
 model_dir = f"./models/EfficientNetB1"
 """
 
-"""ㄋ
+"""
 model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
@@ -131,13 +153,13 @@ model = model.to(device)
 model_dir = f"./models/EfficientNetV2S"
 """
 
-
+"""
 model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = f"./models/EfficientNetV2M"
-
+"""
 
 """
 model = models.convnext_tiny(weights=models.ConvNeXt_Tiny_Weights.DEFAULT)
@@ -158,6 +180,9 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 best_val_acc = 0.0
 initial_epochs = 50
+
+train_acc_list = []
+val_acc_list = []
 
 # 訓練與驗證迴圈
 for epoch in range(initial_epochs):
@@ -199,8 +224,13 @@ for epoch in range(initial_epochs):
         model_path = os.path.join(model_dir, "best_model.pth")
         torch.save(model.state_dict(), model_path)
 
-    print(f"Epoch {epoch+1}/{initial_epochs} - Loss: {running_loss:.4f}, Train Acc: {train_acc:.4f}, Val Acc: {val_acc:.4f}")
+    train_acc_list.append(train_acc)
+    val_acc_list.append(val_acc)
+    
     #scheduler.step()
+    
+    print(f"Epoch {epoch+1}/{initial_epochs} - Loss: {running_loss:.4f}, Train Acc: {train_acc:.4f}, Val Acc: {val_acc:.4f}")
+
 
 # 測試階段
 model.eval()
@@ -224,4 +254,15 @@ plt.title("Test Set Confusion Matrix")
 plt.savefig(model_dir + "/confusion_matrix.png")
 plt.show()
 
-
+# 繪製 Train / Val Accuracy 曲線
+epochs = list(range(1, initial_epochs + 1))
+plt.figure(figsize=(10, 5))
+plt.plot(epochs, train_acc_list, label='Train Accuracy', marker='o')
+plt.plot(epochs, val_acc_list, label='Validation Accuracy', marker='x')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Train vs Validation Accuracy')
+plt.legend()
+plt.grid(True)
+plt.savefig(model_dir + "/accuracy_curve.png")
+plt.show()
