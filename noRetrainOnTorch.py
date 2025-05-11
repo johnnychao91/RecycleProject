@@ -2,10 +2,11 @@
 # 
 # | 模型              | Test Accuracy                      |
 # |-------------------|------------------------------------|
-# | MobileNetV2       | 0.8445378151260504                 |
-# | EfficientNetB0    | 0.8529411764705882                 |
+# | MobileNetV2       | 0.8361344537815126                 |
+# | EfficientNetB0    | 0.8403361344537815                 |
 # | EfficientNetB1    | *(尚未測試)*                        |
 # | EfficientNetV2S   | *(尚未測試)*                        |
+# | EfficientNetV2M   | 0.7415966386554622                 |
 # | ConvNeXtTiny      | *(尚未測試)*                        |
 
 
@@ -91,44 +92,52 @@ x_train = DataLoader(train_dataset, batch_size=16, shuffle=True)
 x_val = DataLoader(val_dataset, batch_size=16, shuffle=False)
 x_test = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
+"""
 model = models.mobilenet_v2(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
+model_dir = f"./models/MobileNetV2"
+"""
 
 """
-#model = models.efficientnet_b0(pretrained=True)
+model = models.efficientnet_b0(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
+model_dir = f"./models/EfficientNetB0"
 """
 
 """
-#model = models.efficientnet_b1(pretrained=True)
+model = models.efficientnet_b1(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
+model_dir = f"./models/EfficientNetB1"
 """
 
 """
-#model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
+model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
+model_dir = f"./models/EfficientNetV2S"
 """
 
-"""
-#model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
+
+model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
-"""
+model_dir = f"./models/EfficientNetV2M"
+
 
 """
-#model = models.convnext_tiny(weights=models.ConvNeXt_Tiny_Weights.DEFAULT)
+model = models.convnext_tiny(weights=models.ConvNeXt_Tiny_Weights.DEFAULT)
 in_features = model.classifier[2].in_features
 model.classifier[2] = nn.Linear(in_features, 9)
 model = model.to(device)
+model_dir = f"./models/ConvNeXtTiny"
 """
 
 for param in model.features.parameters():
@@ -136,7 +145,7 @@ for param in model.features.parameters():
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
+#scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
 
 best_val_acc = 0.0
 initial_epochs = 50
@@ -174,17 +183,15 @@ for epoch in range(initial_epochs):
             val_total += labels.size(0)
     val_acc = val_correct / val_total
 
-if val_acc > best_val_acc:
-    best_val_acc = val_acc
-    # 根據模型名稱建立資料夾並儲存
-    model_name = [k for k in models.__dict__ if models.__dict__[k] == type(model)][0]
-    model_dir = f"./models/{model_name}"
-    os.makedirs(model_dir, exist_ok=True)
-    model_path = os.path.join(model_dir, "best_model.pth")
-    torch.save(model.state_dict(), model_path)
+    if val_acc > best_val_acc:
+        best_val_acc = val_acc
+        # 根據模型名稱建立資料夾並儲存
+        os.makedirs(model_dir, exist_ok=True)
+        model_path = os.path.join(model_dir, "best_model.pth")
+        torch.save(model.state_dict(), model_path)
 
     print(f"Epoch {epoch+1}/{initial_epochs} - Loss: {running_loss:.4f}, Train Acc: {train_acc:.4f}, Val Acc: {val_acc:.4f}")
-    scheduler.step()
+    #scheduler.step()
 
 # 測試階段
 model.eval()
@@ -206,6 +213,5 @@ disp = ConfusionMatrixDisplay(cm, display_labels=all_classes)
 disp.plot(xticks_rotation=45)
 plt.title("Test Set Confusion Matrix")
 plt.savefig(model_dir + "/confusion_matrix.png")
-plt.show()
 
 
