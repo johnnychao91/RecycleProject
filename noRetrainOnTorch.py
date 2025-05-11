@@ -131,22 +131,23 @@ model = model.to(device)
 model_dir = f"./models/EfficientNetV2S"
 """
 
-"""
+
 model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = f"./models/EfficientNetV2M"
+
+
 """
-
-
 model = models.convnext_tiny(weights=models.ConvNeXt_Tiny_Weights.DEFAULT)
 in_features = model.classifier[2].in_features
 model.classifier[2] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = f"./models/ConvNeXtTiny"
-
 """
+
+"""全凍結
 for param in model.features.parameters():
     param.requires_grad = False
 """
