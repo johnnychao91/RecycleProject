@@ -1,20 +1,31 @@
 # Test Accuracy 比較
 # 
 # | 模型              | Test Accuracy                      |
-# | 全凍結--------------------------------------------------| 
+# | 全凍結-50epoch------------------------------------------|
 # | MobileNetV2       | 0.8361344537815126                 |
 # | EfficientNetB0    | 0.8403361344537815                 |
 # | EfficientNetB1    | 0.8403361344537815                 |
+# | EfficientNetB7    | 0.7773109243697479                 |
 # | EfficientNetV2S   | 0.7815126050420168                 |
 # | EfficientNetV2M   | 0.7415966386554622                 |
 # | ConvNeXtTiny      | 0.8382352941176471                 |
-# | 全訓練--------------------------------------------------|
+# | 全訓練-50epoch------------------------------------------|
 # | MobileNetV2       | 0.8466386554621849                 |
 # | EfficientNetB0    | 0.8634453781512605                 |
 # | EfficientNetB1    | 0.8718487394957983                 |
+# | EfficientNetB7    | 0.7731092436974790                 |
 # | EfficientNetV2S   | 0.8298319327731093                 |
 # | EfficientNetV2M   | 0.8172268907563025                 |
 # | ConvNeXtTiny      | 0.7815126050420168                 |
+# | 全訓練-200epoch-----------------------------------------|
+# | MobileNetV2       | 0.8298319327731093                 |
+# | EfficientNetB0    |                  |
+# | EfficientNetB1    |                  |
+# | EfficientNetB7    | 0.8298319327731093                 |
+# | EfficientNetV2S   |                  |
+# | EfficientNetV2M   |                  |
+# | ConvNeXtTiny      |                  |
+
 
 
 import os
@@ -121,20 +132,22 @@ x_train = DataLoader(train_dataset, batch_size=16, shuffle=True, worker_init_fn=
 x_val = DataLoader(val_dataset, batch_size=16, shuffle=False, worker_init_fn=seed_worker, generator=g)
 x_test = DataLoader(test_dataset, batch_size=16, shuffle=False, worker_init_fn=seed_worker, generator=g)
 
+model_dir = f"./models"
 
+"""
 model = models.mobilenet_v2(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
-model_dir = f"./models/MobileNetV2"
-
+model_dir = model_dir + "/MobileNetV2"
+"""
 
 """
 model = models.efficientnet_b0(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
-model_dir = f"./models/EfficientNetB0"
+model_dir = model_dir + "/EfficientNetB0"
 """
 
 """
@@ -142,15 +155,23 @@ model = models.efficientnet_b1(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
-model_dir = f"./models/EfficientNetB1"
+model_dir = model_dir + "/EfficientNetB1"
 """
+
+
+model = models.efficientnet_b7(pretrained=True)
+in_features = model.classifier[1].in_features
+model.classifier[1] = nn.Linear(in_features, 9)
+model = model.to(device)
+model_dir = model_dir + "/EfficientNetB7"
+
 
 """
 model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
-model_dir = f"./models/EfficientNetV2S"
+model_dir = model_dir + "/EfficientNetV2S"
 """
 
 """
@@ -158,7 +179,7 @@ model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAUL
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
-model_dir = f"./models/EfficientNetV2M"
+model_dir = model_dir + "EfficientNetV2M"
 """
 
 """
@@ -166,10 +187,13 @@ model = models.convnext_tiny(weights=models.ConvNeXt_Tiny_Weights.DEFAULT)
 in_features = model.classifier[2].in_features
 model.classifier[2] = nn.Linear(in_features, 9)
 model = model.to(device)
-model_dir = f"./models/ConvNeXtTiny"
+model_dir = model_dir + "/ConvNeXtTiny"
 """
 
-"""全凍結
+model_dir = model_dir + "/allTrain_200epoch"
+
+"""
+#全凍結
 for param in model.features.parameters():
     param.requires_grad = False
 """
@@ -179,7 +203,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 #scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
 
 best_val_acc = 0.0
-initial_epochs = 50
+initial_epochs = 200
 
 train_acc_list = []
 val_acc_list = []
@@ -252,7 +276,6 @@ disp = ConfusionMatrixDisplay(cm, display_labels=all_classes)
 disp.plot(xticks_rotation=45)
 plt.title("Test Set Confusion Matrix")
 plt.savefig(model_dir + "/confusion_matrix.png")
-plt.show()
 
 # 繪製 Train / Val Accuracy 曲線
 epochs = list(range(1, initial_epochs + 1))
@@ -265,4 +288,3 @@ plt.title('Train vs Validation Accuracy')
 plt.legend()
 plt.grid(True)
 plt.savefig(model_dir + "/accuracy_curve.png")
-plt.show()
