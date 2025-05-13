@@ -202,7 +202,7 @@ model = model.to(device)
 model_dir = model_dir + "/ConvNeXtTiny"
 """
 
-model_dir = model_dir + "/allTrain_200epoch"
+model_dir = model_dir + "/halfFreezeHalfTrain_200epochs"
 
 """
 #全凍結
