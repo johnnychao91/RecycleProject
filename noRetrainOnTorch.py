@@ -25,7 +25,14 @@
 # | EfficientNetV2S   |                  |
 # | EfficientNetV2M   |                  |
 # | ConvNeXtTiny      |                  |
-
+# | 半凍結半訓練-200epoch------------------------------------|
+# | MobileNetV2       |                  |
+# | EfficientNetB0    |                  |
+# | EfficientNetB1    |                  |
+# | EfficientNetB7    |                  |
+# | EfficientNetV2S   |                  |
+# | EfficientNetV2M   |                  |
+# | ConvNeXtTiny      |                  |
 
 
 import os
@@ -94,8 +101,13 @@ def load_data():
     return pd.DataFrame(data, columns=['image', 'label'])
 
 total_data = load_data()
-train_val_df, test_df = train_test_split(total_data, test_size=0.10, random_state=42)
-train_df, val_df = train_test_split(train_val_df, test_size=1/6, random_state=42)
+train_val_df, test_df = train_test_split(total_data, test_size=0.15, random_state=42)
+train_df, val_df = train_test_split(train_val_df, test_size=3/17, random_state=42)
+
+label_counts = test_df['label'].value_counts()
+assert all(label_counts >= 40), "有類別樣本數不足 40！"
+
+test_df = test_df.groupby('label').sample(n=40, random_state=42).reset_index(drop=True)
 
 train_df = train_df.sample(frac=1., random_state=100).reset_index(drop=True)
 
@@ -134,13 +146,13 @@ x_test = DataLoader(test_dataset, batch_size=16, shuffle=False, worker_init_fn=s
 
 model_dir = f"./models"
 
-"""
+
 model = models.mobilenet_v2(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = model_dir + "/MobileNetV2"
-"""
+
 
 """
 model = models.efficientnet_b0(pretrained=True)
@@ -150,13 +162,13 @@ model = model.to(device)
 model_dir = model_dir + "/EfficientNetB0"
 """
 
-
+"""
 model = models.efficientnet_b1(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = model_dir + "/EfficientNetB1"
-
+"""
 
 """
 model = models.efficientnet_b7(pretrained=True)
@@ -204,12 +216,25 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 best_val_acc = 0.0
 initial_epochs = 200
+freeze_epochs = 100
 
 train_acc_list = []
 val_acc_list = []
 
+
 # 訓練與驗證迴圈
 for epoch in range(initial_epochs):
+    if epoch == freeze_epochs:
+        print(f"解凍一半層數進行 fine-tuning at epoch {epoch}")
+
+        total_layers = list(model.named_parameters())
+        num_to_unfreeze = len(total_layers) // 2
+
+        for name, param in total_layers[-num_to_unfreeze:]:
+            param.requires_grad = True
+
+        # 重新建立 optimizer（必須）
+        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4)
     model.train()
     running_loss = 0.0
     correct = 0
