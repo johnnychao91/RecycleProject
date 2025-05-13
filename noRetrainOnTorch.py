@@ -20,7 +20,7 @@
 # | 全訓練-200epoch-----------------------------------------|
 # | MobileNetV2       | 0.8298319327731093                 |
 # | EfficientNetB0    |                  |
-# | EfficientNetB1    |                  |
+# | EfficientNetB1    | 0.8739495798319328                 |
 # | EfficientNetB7    | 0.8298319327731093                 |
 # | EfficientNetV2S   |                  |
 # | EfficientNetV2M   |                  |
@@ -150,21 +150,21 @@ model = model.to(device)
 model_dir = model_dir + "/EfficientNetB0"
 """
 
-"""
+
 model = models.efficientnet_b1(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = model_dir + "/EfficientNetB1"
+
+
 """
-
-
 model = models.efficientnet_b7(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = model_dir + "/EfficientNetB7"
-
+"""
 
 """
 model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
