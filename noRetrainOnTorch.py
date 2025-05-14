@@ -1,6 +1,6 @@
 # Test Accuracy 比較
 # 
-# | 模型              | Test Accuracy                      |
+# | 模型               | Test Accuracy                      |
 # | 全凍結-50epoch------------------------------------------|
 # | MobileNetV2       | 0.8361344537815126                 |
 # | EfficientNetB0    | 0.8403361344537815                 |
@@ -26,13 +26,22 @@
 # | EfficientNetV2M   |                  |
 # | ConvNeXtTiny      |                  |
 # | 半凍結半訓練-200epoch------------------------------------|
-# | MobileNetV2       |                  |
-# | EfficientNetB0    |                  |
-# | EfficientNetB1    |                  |
-# | EfficientNetB7    |                  |
+# | MobileNetV2       | 0.8833333333333333                 |
+# | EfficientNetB0    | 0.9250000000000000                 |
+# | EfficientNetB1    | 0.9305555555555556                 |
+# | EfficientNetB7    | 0.9111111111111111                 |
 # | EfficientNetV2S   |                  |
-# | EfficientNetV2M   |                  |
+# | EfficientNetV2M   |  0.9222222222222223                |
 # | ConvNeXtTiny      |                  |
+
+# | 前50凍結後50finetune50%-100epoch-------------------------|
+# | MobileNetV2       | 0.8833333333333333                 |
+# | EfficientNetB0    | 0.9305555555555556                 |
+# | EfficientNetB1    | 0.9277777777777778                 |
+# | EfficientNetB7    |                  |
+# | EfficientNetV2S   | 0.9166666666666666                 |
+# | EfficientNetV2M   | 0.9388888888888889                 |
+# | ConvNeXtTiny      |  0.9277777777777778                |
 
 
 import os
@@ -146,13 +155,13 @@ x_test = DataLoader(test_dataset, batch_size=16, shuffle=False, worker_init_fn=s
 
 model_dir = f"./models"
 
-
+"""
 model = models.mobilenet_v2(pretrained=True)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = model_dir + "/MobileNetV2"
-
+"""
 
 """
 model = models.efficientnet_b0(pretrained=True)
@@ -178,13 +187,13 @@ model = model.to(device)
 model_dir = model_dir + "/EfficientNetB7"
 """
 
-"""
+
 model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = model_dir + "/EfficientNetV2S"
-"""
+
 
 """
 model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
@@ -204,11 +213,11 @@ model_dir = model_dir + "/ConvNeXtTiny"
 
 model_dir = model_dir + "/halfFreezeHalfTrain_200epochs"
 
-"""
+
 #全凍結
 for param in model.features.parameters():
     param.requires_grad = False
-"""
+
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
