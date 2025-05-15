@@ -30,9 +30,9 @@
 # | EfficientNetB0    | 0.9250000000000000                 |
 # | EfficientNetB1    | 0.9305555555555556                 |
 # | EfficientNetB7    | 0.9111111111111111                 |
-# | EfficientNetV2S   |                  |
-# | EfficientNetV2M   |  0.9222222222222223                |
-# | ConvNeXtTiny      |                  |
+# | EfficientNetV2S   | 0.9333333333333333                 |
+# | EfficientNetV2M   | 0.9222222222222223                 |
+# | ConvNeXtTiny      | 0.8888888888888888                 |
 
 # | 前50凍結後50finetune50%-100epoch-------------------------|
 # | MobileNetV2       | 0.8833333333333333                 |
@@ -187,29 +187,29 @@ model = model.to(device)
 model_dir = model_dir + "/EfficientNetB7"
 """
 
-
+"""
 model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = model_dir + "/EfficientNetV2S"
-
+"""
 
 """
 model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
 in_features = model.classifier[1].in_features
 model.classifier[1] = nn.Linear(in_features, 9)
 model = model.to(device)
-model_dir = model_dir + "EfficientNetV2M"
+model_dir = model_dir + "/EfficientNetV2M"
 """
 
-"""
+
 model = models.convnext_tiny(weights=models.ConvNeXt_Tiny_Weights.DEFAULT)
 in_features = model.classifier[2].in_features
 model.classifier[2] = nn.Linear(in_features, 9)
 model = model.to(device)
 model_dir = model_dir + "/ConvNeXtTiny"
-"""
+
 
 model_dir = model_dir + "/halfFreezeHalfTrain_200epochs"
 
