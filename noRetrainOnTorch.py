@@ -10,13 +10,13 @@
 # | EfficientNetV2M   |                  |
 # | ConvNeXtTiny      |                  |
 # | 全訓練-50epoch------------------------------------------|
-# | MobileNetV2       | 0.8500000000000000                 |
-# | EfficientNetB0    | 0.8555555555555555                 |
-# | EfficientNetB1    | 0.8916666666666667                 |
-# | EfficientNetB7    |                  |
-# | EfficientNetV2S   |                  |
-# | EfficientNetV2M   |                  |
-# | ConvNeXtTiny      |                  |
+# | MobileNetV2       | 0.8500                             |
+# | EfficientNetB0    | 0.9000                             |
+# | EfficientNetB1    | 0.8778                             |
+# | EfficientNetB7    | 0.8611                             |
+# | EfficientNetV2S   | 0.8028                             |
+# | EfficientNetV2M   | 0.8389                             |
+# | ConvNeXtTiny      | 0.7806                             |
 # | 全訓練-200epoch-----------------------------------------|
 # | MobileNetV2       | 0.8298319327731093                 |
 # | EfficientNetB0    |                  |
@@ -156,8 +156,8 @@ x_val = DataLoader(val_dataset, batch_size=16, shuffle=False, worker_init_fn=see
 x_test = DataLoader(test_dataset, batch_size=16, shuffle=False, worker_init_fn=seed_worker, generator=g)
 
 
-#model_list = ["MobileNetV2", "EfficientNetB0", "EfficientNetB1", "EfficientNetB7", "EfficientNetV2S" , "EfficientNetV2M", "ConvNeXtTiny"]
-model_list = ["EfficientNetB7", "EfficientNetV2S" , "EfficientNetV2M", "ConvNeXtTiny"]
+model_list = ["MobileNetV2", "EfficientNetB0", "EfficientNetB1", "EfficientNetB7", "EfficientNetV2S" , "EfficientNetV2M", "ConvNeXtTiny"]
+#model_list = ["EfficientNetV2S" , "EfficientNetV2M", "ConvNeXtTiny"]
 
 for m in model_list :
 
@@ -208,21 +208,21 @@ for m in model_list :
         model_dir = model_dir + "/ConvNeXtTiny"
 
 
-    model_dir = model_dir + "/allTrain_50epochs"
+    model_dir = model_dir + "/halfFreezeHalfTrain_200epochs"
 
-    """
+    
     #全凍結
     for param in model.features.parameters():
         param.requires_grad = False
-    """
+    
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     #scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
 
     best_val_acc = 0.0
-    initial_epochs = 50
-    freeze_epochs = -1
+    initial_epochs = 200
+    freeze_epochs = 100
 
     train_acc_list = []
     val_acc_list = []
@@ -306,10 +306,10 @@ for m in model_list :
     macro_f1 = f1_score(y_true, y_pred, average='macro')
 
     # 螢幕輸出
-    print(f"Test Accuracy       : {test_acc:.4f}")
-    print(f"Macro Precision     : {macro_precision:.4f}")
-    print(f"Macro Recall        : {macro_recall:.4f}")
-    print(f"Macro F1-Score      : {macro_f1:.4f}")
+    #rint(f"Test Accuracy       : {test_acc:.4f}")
+    #print(f"Macro Precision     : {macro_precision:.4f}")
+    #print(f"Macro Recall        : {macro_recall:.4f}")
+    #print(f"Macro F1-Score      : {macro_f1:.4f}")
     print("Classification Report:")
     print(report)
 
@@ -318,10 +318,10 @@ for m in model_list :
     os.makedirs(model_dir, exist_ok=True)
     report_path = os.path.join(model_dir, "metric_report.txt")
     with open(report_path, "w") as f:
-        f.write(f"Test Accuracy: {test_acc:.4f}\n")
-        f.write(f"Macro Precision : {macro_precision:.4f}\n")
-        f.write(f"Macro Recall    : {macro_recall:.4f}\n")
-        f.write(f"Macro F1-Score  : {macro_f1:.4f}\n")
+    #    f.write(f"Test Accuracy: {test_acc:.4f}\n")
+    #    f.write(f"Macro Precision : {macro_precision:.4f}\n")
+    #    f.write(f"Macro Recall    : {macro_recall:.4f}\n")
+    #    f.write(f"Macro F1-Score  : {macro_f1:.4f}\n")
         f.write("Classification Report:\n")
         f.write(report + "\n")
 

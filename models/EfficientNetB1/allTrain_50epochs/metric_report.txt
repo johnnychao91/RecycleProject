@@ -1,7 +1,3 @@
-Test Accuracy: 0.8778
-Macro Precision : 0.8784
-Macro Recall    : 0.8778
-Macro F1-Score  : 0.8765
 Classification Report:
                      precision    recall  f1-score   support
 
