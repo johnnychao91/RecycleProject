@@ -26,13 +26,13 @@
 # | EfficientNetV2M   |                  |
 # | ConvNeXtTiny      |                  |
 # | 半凍結半訓練-200epoch------------------------------------|
-# | MobileNetV2       | 0.8833333333333333                 |
-# | EfficientNetB0    | 0.9250000000000000                 |
-# | EfficientNetB1    | 0.9305555555555556                 |
-# | EfficientNetB7    | 0.9111111111111111                 |
-# | EfficientNetV2S   | 0.9333333333333333                 |
-# | EfficientNetV2M   | 0.9222222222222223                 |
-# | ConvNeXtTiny      | 0.8888888888888888                 |
+# | MobileNetV2       | 0.8833                             |
+# | EfficientNetB0    | 0.9194                             |
+# | EfficientNetB1    | 0.9111                             |
+# | EfficientNetB7    | 0.9333                             |
+# | EfficientNetV2S   | 0.9083                             |
+# | EfficientNetV2M   | 0.9139                             |
+# | ConvNeXtTiny      | 0.9139                             |
 
 # | 前50凍結後50finetune50%-100epoch-------------------------|
 # | MobileNetV2       | 0.8833333333333333                 |
@@ -41,7 +41,7 @@
 # | EfficientNetB7    |                  |
 # | EfficientNetV2S   | 0.9166666666666666                 |
 # | EfficientNetV2M   | 0.9388888888888889                 |
-# | ConvNeXtTiny      |  0.9277777777777778                |
+# | ConvNeXtTiny      | 0.9277777777777778                 |
 
 
 import os
@@ -208,7 +208,7 @@ for m in model_list :
         model_dir = model_dir + "/ConvNeXtTiny"
 
 
-    model_dir = model_dir + "/halfFreezeHalfTrain_200epochs"
+    model_dir = model_dir + "/allFreeze_50epochs"
 
     
     #全凍結
@@ -221,8 +221,8 @@ for m in model_list :
     #scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
 
     best_val_acc = 0.0
-    initial_epochs = 200
-    freeze_epochs = 100
+    initial_epochs = 50
+    freeze_epochs = -1
 
     train_acc_list = []
     val_acc_list = []
