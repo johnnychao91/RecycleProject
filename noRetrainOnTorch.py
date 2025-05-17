@@ -25,6 +25,14 @@
 # | EfficientNetV2S   |                              |
 # | EfficientNetV2M   |                              |
 # | ConvNeXtTiny      |                              |
+# | 半凍結半訓練-100epoch------------------------------------|
+# | MobileNetV2       |                              |
+# | EfficientNetB0    |                              |
+# | EfficientNetB1    |                              |
+# | EfficientNetB7    |                              |
+# | EfficientNetV2S   |                              |
+# | EfficientNetV2M   |                              |
+# | ConvNeXtTiny      |                              |
 # | 半凍結半訓練-200epoch------------------------------------|
 # | MobileNetV2       | 0.8833                             |
 # | EfficientNetB0    | 0.9194                             |
@@ -33,16 +41,6 @@
 # | EfficientNetV2S   | 0.9083                             |
 # | EfficientNetV2M   | 0.9139                             |
 # | ConvNeXtTiny      | 0.9139                             |
-
-# | 前50凍結後50finetune50%-100epoch-------------------------|
-# | MobileNetV2       | 0.8833333333333333                 |
-# | EfficientNetB0    | 0.9305555555555556                 |
-# | EfficientNetB1    | 0.9277777777777778                 |
-# | EfficientNetB7    |                  |
-# | EfficientNetV2S   | 0.9166666666666666                 |
-# | EfficientNetV2M   | 0.9388888888888889                 |
-# | ConvNeXtTiny      | 0.9277777777777778                 |
-
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
