@@ -18,13 +18,13 @@
 # | EfficientNetV2M   | 0.8389                             |
 # | ConvNeXtTiny      | 0.7806                             |
 # | 全訓練-200epoch-----------------------------------------|
-# | MobileNetV2       |                              |
-# | EfficientNetB0    |                              |
-# | EfficientNetB1    |                              |
-# | EfficientNetB7    |                              |
-# | EfficientNetV2S   |                              |
-# | EfficientNetV2M   |                              |
-# | ConvNeXtTiny      |                              |
+# | MobileNetV2       | 0.8167                             |
+# | EfficientNetB0    | 0.8889                             |
+# | EfficientNetB1    | 0.8694                             |
+# | EfficientNetB7    | 0.8500                             |
+# | EfficientNetV2S   | 0.8472                             |
+# | EfficientNetV2M   | 0.8139                             |
+# | ConvNeXtTiny      | 0.7667                             |
 # | 半凍結半訓練-100epoch------------------------------------|
 # | MobileNetV2       |                              |
 # | EfficientNetB0    |                              |
@@ -206,21 +206,21 @@ for m in model_list :
         model_dir = model_dir + "/ConvNeXtTiny"
 
 
-    model_dir = model_dir + "/allFreeze_50epochs"
+    model_dir = model_dir + "/halfFreezeHalfTrain_100epochs"
 
-    """
+    
     #全凍結
     for param in model.features.parameters():
         param.requires_grad = False
-    """
+    
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     #scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
 
     best_val_acc = 0.0
-    initial_epochs = 200
-    freeze_epochs = -1
+    initial_epochs = 100
+    freeze_epochs = 50
 
     train_acc_list = []
     val_acc_list = []
