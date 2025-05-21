@@ -26,13 +26,13 @@
 # | EfficientNetV2M   | 0.8139                             |
 # | ConvNeXtTiny      | 0.7667                             |
 # | 半凍結半訓練-100epoch------------------------------------|
-# | MobileNetV2       |                              |
-# | EfficientNetB0    |                              |
-# | EfficientNetB1    |                              |
-# | EfficientNetB7    |                              |
-# | EfficientNetV2S   |                              |
-# | EfficientNetV2M   |                              |
-# | ConvNeXtTiny      |                              |
+# | MobileNetV2       | 0.8833                             |
+# | EfficientNetB0    | 0.9194                             |
+# | EfficientNetB1    | 0.9222                             |
+# | EfficientNetB7    | 0.9139                             |
+# | EfficientNetV2S   | 0.9056                             |
+# | EfficientNetV2M   | 0.9250                             |
+# | ConvNeXtTiny      | 0.9111                             |
 # | 半凍結半訓練-200epoch------------------------------------|
 # | MobileNetV2       | 0.8833                             |
 # | EfficientNetB0    | 0.9194                             |
@@ -153,7 +153,6 @@ x_train = DataLoader(train_dataset, batch_size=16, shuffle=True, worker_init_fn=
 x_val = DataLoader(val_dataset, batch_size=16, shuffle=False, worker_init_fn=seed_worker, generator=g)
 x_test = DataLoader(test_dataset, batch_size=16, shuffle=False, worker_init_fn=seed_worker, generator=g)
 
-
 model_list = ["MobileNetV2", "EfficientNetB0", "EfficientNetB1", "EfficientNetB7", "EfficientNetV2S" , "EfficientNetV2M", "ConvNeXtTiny"]
 #model_list = ["EfficientNetV2S" , "EfficientNetV2M", "ConvNeXtTiny"]
 
@@ -173,7 +172,6 @@ for m in model_list :
         model.classifier[1] = nn.Linear(in_features, 9)
         model = model.to(device)
         model_dir = model_dir + "/EfficientNetB0"
-
     elif m == "EfficientNetB1" :
         model = models.efficientnet_b1(pretrained=True)
         in_features = model.classifier[1].in_features
@@ -205,14 +203,11 @@ for m in model_list :
         model = model.to(device)
         model_dir = model_dir + "/ConvNeXtTiny"
 
-
     model_dir = model_dir + "/halfFreezeHalfTrain_100epochs"
-
     
     #全凍結
     for param in model.features.parameters():
         param.requires_grad = False
-    
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -224,7 +219,6 @@ for m in model_list :
 
     train_acc_list = []
     val_acc_list = []
-
 
     # 訓練與驗證迴圈
     for epoch in range(initial_epochs):
@@ -284,7 +278,6 @@ for m in model_list :
         
         print(f"Epoch {epoch+1}/{initial_epochs} - Loss: {running_loss:.4f}, Train Acc: {train_acc:.4f}, Val Acc: {val_acc:.4f}")
 
-
     # 測試階段
     model.eval()
     y_true, y_pred = [], []
@@ -304,22 +297,13 @@ for m in model_list :
     macro_f1 = f1_score(y_true, y_pred, average='macro')
 
     # 螢幕輸出
-    #rint(f"Test Accuracy       : {test_acc:.4f}")
-    #print(f"Macro Precision     : {macro_precision:.4f}")
-    #print(f"Macro Recall        : {macro_recall:.4f}")
-    #print(f"Macro F1-Score      : {macro_f1:.4f}")
     print("Classification Report:")
     print(report)
-
 
     # 寫入檔案
     os.makedirs(model_dir, exist_ok=True)
     report_path = os.path.join(model_dir, "metric_report.txt")
     with open(report_path, "w") as f:
-    #    f.write(f"Test Accuracy: {test_acc:.4f}\n")
-    #    f.write(f"Macro Precision : {macro_precision:.4f}\n")
-    #    f.write(f"Macro Recall    : {macro_recall:.4f}\n")
-    #    f.write(f"Macro F1-Score  : {macro_f1:.4f}\n")
         f.write("Classification Report:\n")
         f.write(report + "\n")
 
