@@ -1,7 +1,7 @@
 # Test Accuracy 比較
 # 
 # | 模型               | Test Accuracy                      |
-# | 全凍結-50epoch------------------------------------------|
+# | 全凍結-50epoch-lr=0.001---------------------------------|
 # | MobileNetV2       | 0.8250                             |
 # | EfficientNetB0    | 0.8417                             |
 # | EfficientNetB1    | 0.8222                             |
@@ -9,7 +9,7 @@
 # | EfficientNetV2S   | 0.7944                             |
 # | EfficientNetV2M   | 0.7528                             |
 # | ConvNeXtTiny      | 0.8194                             |
-# | 全訓練-50epoch------------------------------------------|
+# | 全訓練-50epoch-lr=0.001---------------------------------|
 # | MobileNetV2       | 0.8500                             |
 # | EfficientNetB0    | 0.9000                             |
 # | EfficientNetB1    | 0.8778                             |
@@ -17,7 +17,7 @@
 # | EfficientNetV2S   | 0.8028                             |
 # | EfficientNetV2M   | 0.8389                             |
 # | ConvNeXtTiny      | 0.7806                             |
-# | 全訓練-200epoch-----------------------------------------|
+# | 全訓練-200epoch-lr=0.001--------------------------------|
 # | MobileNetV2       | 0.8167                             |
 # | EfficientNetB0    | 0.8889                             |
 # | EfficientNetB1    | 0.8694                             |
@@ -25,7 +25,7 @@
 # | EfficientNetV2S   | 0.8472                             |
 # | EfficientNetV2M   | 0.8139                             |
 # | ConvNeXtTiny      | 0.7667                             |
-# | 半凍結半訓練-100epoch------------------------------------|
+# | 半凍結半訓練-100epoch-lr=0.001---------------------------|
 # | MobileNetV2       | 0.8833                             |
 # | EfficientNetB0    | 0.9194                             |
 # | EfficientNetB1    | 0.9222                             |
@@ -33,7 +33,7 @@
 # | EfficientNetV2S   | 0.9056                             |
 # | EfficientNetV2M   | 0.9250                             |
 # | ConvNeXtTiny      | 0.9111                             |
-# | 半凍結半訓練-200epoch------------------------------------|
+# | 半凍結半訓練-200epoch-lr=0.001---------------------------|
 # | MobileNetV2       | 0.8833                             |
 # | EfficientNetB0    | 0.9194                             |
 # | EfficientNetB1    | 0.9111                             |
@@ -41,6 +41,14 @@
 # | EfficientNetV2S   | 0.9083                             |
 # | EfficientNetV2M   | 0.9139                             |
 # | ConvNeXtTiny      | 0.9139                             |
+# | 半凍結半訓練-100epoch-lr=0.0001--------------------------|
+# | MobileNetV2       | 0.8639                             |
+# | EfficientNetB0    | 0.9056                             |
+# | EfficientNetB1    | 0.9361                             |
+# | EfficientNetB7    | 0.9222                             |
+# | EfficientNetV2S   | 0.9111                             |
+# | EfficientNetV2M   | 0.9250                             |
+# | ConvNeXtTiny      | 0.9222                             |
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -203,14 +211,14 @@ for m in model_list :
         model = model.to(device)
         model_dir = model_dir + "/ConvNeXtTiny"
 
-    model_dir = model_dir + "/halfFreezeHalfTrain_100epochs"
+    model_dir = model_dir + "/halfFreezeHalfTrain_100epochs_lr0.0001"
     
     #全凍結
     for param in model.features.parameters():
         param.requires_grad = False
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
     #scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
 
     best_val_acc = 0.0
