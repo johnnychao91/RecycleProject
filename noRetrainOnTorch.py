@@ -41,6 +41,22 @@
 # | EfficientNetV2S   | 0.9083                             |
 # | EfficientNetV2M   | 0.9139                             |
 # | ConvNeXtTiny      | 0.9139                             |
+# | 全訓練-50epoch-lr=0.0001--------------------------------|
+# | MobileNetV2       |                              |
+# | EfficientNetB0    |                              |
+# | EfficientNetB1    |                              |
+# | EfficientNetB7    |                              |
+# | EfficientNetV2S   |                              |
+# | EfficientNetV2M   |                              |
+# | ConvNeXtTiny      |                              |
+# | 全訓練-200epoch-lr=0.0001-------------------------------|
+# | MobileNetV2       |                              |
+# | EfficientNetB0    |                              |
+# | EfficientNetB1    |                              |
+# | EfficientNetB7    |                              |
+# | EfficientNetV2S   |                              |
+# | EfficientNetV2M   |                              |
+# | ConvNeXtTiny      |                              |
 # | 半凍結半訓練-100epoch-lr=0.0001--------------------------|
 # | MobileNetV2       | 0.8639                             |
 # | EfficientNetB0    | 0.9056                             |
@@ -50,13 +66,13 @@
 # | EfficientNetV2M   | 0.9250                             |
 # | ConvNeXtTiny      | 0.9222                             |
 # | 半凍結半訓練-200epoch-lr=0.0001--------------------------|
-# | MobileNetV2       |                              |
-# | EfficientNetB0    |                              |
-# | EfficientNetB1    |                              |
-# | EfficientNetB7    |                              |
-# | EfficientNetV2S   |                              |
-# | EfficientNetV2M   |                              |
-# | ConvNeXtTiny      |                              |
+# | MobileNetV2       | 0.8778                             |
+# | EfficientNetB0    | 0.9111                             |
+# | EfficientNetB1    | 0.8972                             |
+# | EfficientNetB7    | 0.9139                             |
+# | EfficientNetV2S   | 0.9306                             |
+# | EfficientNetV2M   | 0.9306                             |
+# | ConvNeXtTiny      | 0.9194                             |
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -219,11 +235,13 @@ for m in model_list :
         model = model.to(device)
         model_dir = model_dir + "/ConvNeXtTiny"
 
-    model_dir = model_dir + "/halfFreezeHalfTrain_200epochs_lr0.0001"
+    model_dir = model_dir + "/allTrain_200epochs_lr0.0001"
     
+    '''
     #全凍結
     for param in model.features.parameters():
         param.requires_grad = False
+    '''
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
@@ -231,7 +249,7 @@ for m in model_list :
 
     best_val_acc = 0.0
     initial_epochs = 200
-    freeze_epochs = 100
+    freeze_epochs = -1
 
     train_acc_list = []
     val_acc_list = []
