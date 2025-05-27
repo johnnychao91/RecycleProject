@@ -40,15 +40,16 @@
 # | EfficientNetB7    | 0.9333                             |
 # | EfficientNetV2S   | 0.9083                             |
 # | EfficientNetV2M   | 0.9139                             |
+# | EfficientNetV2M   | 0.9139                             |
 # | ConvNeXtTiny      | 0.9139                             |
 # | 全訓練-50epoch-lr=0.0001--------------------------------|
-# | MobileNetV2       |                              |
-# | EfficientNetB0    |                              |
-# | EfficientNetB1    |                              |
-# | EfficientNetB7    |                              |
-# | EfficientNetV2S   |                              |
-# | EfficientNetV2M   |                              |
-# | ConvNeXtTiny      |                              |
+# | MobileNetV2       | 0.9000                             |
+# | EfficientNetB0    | 0.9167                             |
+# | EfficientNetB1    | 0.9056                             |
+# | EfficientNetB7    | 0.9083                             |
+# | EfficientNetV2S   | 0.8944                             |
+# | EfficientNetV2M   | 0.9111                             |
+# | ConvNeXtTiny      | 0.9111                             |
 # | 全訓練-200epoch-lr=0.0001-------------------------------|
 # | MobileNetV2       | 0.8833                             |
 # | EfficientNetB0    | 0.9111                             |
